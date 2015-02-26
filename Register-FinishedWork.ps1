@@ -13,7 +13,10 @@ function Register-FinishedWork
     [CmdletBinding()]
     Param
     (
-
+        # Where to forward the work on to.
+        $Destination = "C:\new work",
+        $PSLocation = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        $PSCommand = "-executionPolicy Bypass -NoProfile -Noninteractive -NoLogo -noexit"
     )
 
     Begin
@@ -23,7 +26,7 @@ function Register-FinishedWork
     Process
     {
         New-Item -Path "HKCR:\`*\Shell\Powershell" -Force -Value "Submit Finished Work"
-        New-Item -Path "HKCR:\`*\Shell\Powershell\Command" -Force -Value "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionPolicy Bypass -NoProfile -Noninteractive -NoLogo -File N:\ps\exams\Submit-FinishedWork.ps1 `"%1`""
+        New-Item -Path "HKCR:\`*\Shell\Powershell\Command" -Force -Value "$PSLocation $PSCommand -File N:\\examCmdlets\\Submit-FinishedWork.ps1 -Path `"%1`" -Destination `"$Destination`" "
     }
     End
     {
