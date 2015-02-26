@@ -20,6 +20,12 @@ Param
                 ValueFromPipelineByPropertyName=$true,
                 Position=0)]
     [string[]]$Path
+
+    , # Path to finished work location
+    [Parameter(Mandatory=$True,
+            ValueFromPipelineByPropertyName=$true,
+            Position=1)]
+    [string]$Destination
 )
 
 Begin
@@ -32,9 +38,9 @@ Process
     $name = ([adsi]"WinNT://$env:USERDOMAIN/$env:USERNAME,user").fullname
     $time = ($file.LastAccessTimeUtc.GetDateTimeFormats())[73].replace(':','.')
 
-    $desitnation = join-path "c:\finished" ("$id - $name - $time - " + $file.Basename + $file.Extension)
+    $Destination = join-path -Path $Destination  -ChildPath ("$id - $name - $time - " + $file.Basename + $file.Extension)
 
-    Copy-Item -Destination $desitnation -Force -LiteralPath "$path"
+    Copy-Item -Destination $Destination -LiteralPath "$path" -Force
 }
 End
 {
