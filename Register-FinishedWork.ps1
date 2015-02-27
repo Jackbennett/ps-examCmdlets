@@ -33,4 +33,7 @@ function Register-FinishedWork
     }
 }
 
-Register-FinishedWork
+#Check for the ISE so I can just hit F5 quickly
+if( (Get-Host).name -eq "Windows PowerShell ISE Host" ){
+    Register-FinishedWork
+}
