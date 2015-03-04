@@ -14,7 +14,7 @@ function Register-FinishedWork
     Param
     (
         # Where to forward the work on to.
-        $Destination = "C:\new work",
+        $Destination = "\\BHS-FS02\Submitted Work",
         $PSLocation = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
         $PSCommand = "-executionPolicy Bypass -NoProfile -Noninteractive -NoLogo -noexit"
     )
