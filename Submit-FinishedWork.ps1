@@ -36,7 +36,7 @@ Process
     $file = Get-Item -LiteralPath $path
     $id = $env:USERNAME
     $name = ([adsi]"WinNT://$env:USERDOMAIN/$env:USERNAME,user").fullname
-    $time = ($file.LastAccessTimeUtc.GetDateTimeFormats())[73].replace(':','.')
+    $time = (Get-Date $file.LastAccessTimeUtc -format u).replace(':','.')
 
     $Destination = join-path -Path $Destination  -ChildPath ("$id - $name - $time - " + $file.Basename + $file.Extension)
 
