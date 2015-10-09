@@ -1,4 +1,4 @@
-function New-homeShortcuts
+function New-HomeShortcuts
 {
     Param(
         # Use an existing shortcut to update the target.
@@ -9,14 +9,23 @@ function New-homeShortcuts
 
         , # Out Folder
         $destination
+
+        , # User accounts to create shortcut to home directories.
+        $classList = $(Import-Csv 'N:\users.txt')
     )
 
-    $classList = import-csv N:\u.txt
-    import-module util -Force
+    # Use force to always get the newest version of New-Shortcut.
+    Import-Module util -Force
 
     $classList | foreach{
-            get-aduser -Identity "CA$($_.identity)" -properties homedirectory
+            Get-ADUser -Identity "CA$($_.identity)" -properties homedirectory
         } | foreach{
-            new-shortcut -template $template -newName $_.samaccountname -destination (join-path $destination "$($_.samaccountname) $($_.GivenName) $($_.Surname).lnk") -targetPath $_.homedirectory -description $_.homedirectory
+            new-shortcut @{
+                template = $template
+                newName  = $_.samaccountname
+                destination = (Join-Path $destination "$($_.samaccountname) $($_.GivenName) $($_.Surname).lnk")
+                targetPath = $_.homedirectory
+                description = "Controlled Assesment Tracking"
+            }
         }
 }
