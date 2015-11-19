@@ -3,29 +3,39 @@ function New-HomeShortcuts
     Param(
         # Use an existing shortcut to update the target.
         [Parameter(Mandatory=$true,
-                    Position=0)]
+                   Position=1)]
         [string]
         $template
 
-        , # Out Folder
+        , # Absolute path to desired folder
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         $destination
 
         , # User accounts to create shortcut to home directories.
-        $classList = $(Import-Csv 'N:\users.txt')
+        [Parameter(Mandatory=$true, Position=0, ValueFromPipeline=$true)]
+        [Microsoft.ActiveDirectory.Management.ADUser[]]
+        $Identity
     )
 
-    # Use force to always get the newest version of New-Shortcut.
-    Import-Module util -Force
-
-    $classList | foreach{
-            Get-ADUser -Identity "CA$($_.identity)" -properties homedirectory
-        } | foreach{
-            new-shortcut @{
-                template = $template
-                newName  = $_.samaccountname
-                destination = (Join-Path $destination "$($_.samaccountname) $($_.GivenName) $($_.Surname).lnk")
-                targetPath = $_.homedirectory
-                description = "Controlled Assesment Tracking"
-            }
+    begin
+    {
+        try{get-command new-shortcut}
+        catch{
+            Import-Module util -ErrorAction Stop
         }
+    }
+
+    Process
+    {
+        $Identity | Get-ADUser -properties homedirectory | foreach{
+                $shortcut = @{
+                    template = $template
+                    destination = (Join-Path $destination "$($_.Surname) $($_.GivenName) $($_.samaccountname).lnk")
+                    targetPath = $_.homedirectory
+                    description = "Controlled Assesment Tracking"
+                }
+
+                new-shortcut @shortcut
+            }
+    }
 }
